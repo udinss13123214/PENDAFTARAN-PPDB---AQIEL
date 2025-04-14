@@ -1,0 +1,391 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPDB 2025</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+
+</head>
+<body class="bg-gray-100">
+    <header class="bg-blue-600 text-white py-4">
+        <div class="container mx-auto flex justify-between items-center px-4">
+            <h1 class="text-xl font-bold">Informasi PPDB 2025</h1>
+            <nav id="desktopMenu" class="hidden md:flex space-x-6">
+                <a href="login.html" id="loginOption" class="hover:text-gray-200">Login</a>
+                <a href="daftar.html" id="registerOption" class="hover:text-gray-200">Daftar</a>
+                <a href="dashboard.html" id="dashboardOption" class="hidden hover:text-gray-200">Dashboard</a>
+                <a href="#" id="logoutOption" class="hidden hover:text-red-300 cursor-pointer" onclick="logout()">Logout</a>
+            </nav>
+
+            <!-- Hamburger Menu (Mobile) -->
+            <div class="relative md:hidden z-50">
+                <button id="hamburger" class="focus:outline-none flex flex-col space-y-1 transition-transform duration-300">
+                    <div class="w-6 h-1 bg-white transition-all duration-400" id="bar1"></div>
+                    <div class="w-6 h-1 bg-white transition-all duration-400" id="bar2"></div>
+                    <div class="w-6 h-1 bg-white transition-all duration-400" id="bar3"></div>
+                </button>
+
+                <!-- Menu untuk Mobile -->
+                <ul id="mobileMenu" class="absolute right-0 mt-2 w-48 bg-white text-black rounded-lg shadow-lg transform scale-95 opacity-0 transition-all duration-300 hidden">
+                    <li><a href="login.html" id="loginOptionMobile" class="block px-4 py-2 hover:bg-gray-200">Login</a></li>
+                    <li><a href="daftar.html" id="registerOptionMobile" class="block px-4 py-2 hover:bg-gray-200">Daftar</a></li>
+                    <li><a href="dashboard.html" id="dashboardOptionMobile" class="hidden block px-4 py-2 hover:bg-gray-200">Dashboard</a></li>
+                    <li><a href="#" id="logoutOptionMobile" class="hidden block px-4 py-2 hover:bg-gray-200" onclick="logout()">Logout</a></li>
+                </ul>
+        </div>
+    </header>
+<!--SLider-->
+<div class="container mx-auto my-6 px-4">
+    <div id="slider" class="relative w-full max-w-3xl h-56 mx-auto overflow-hidden rounded-lg shadow-lg">
+        <div id="slides" class="flex transition-transform duration-500 ease-in-out">
+            <img src="pic/ppdb.png" class="w-full h-full object-cover flex-shrink-0" alt="Slide 1">
+            <img src="pic/ppdb.png" class="w-full h-full object-cover flex-shrink-0" alt="Slide 2">
+            <img src="pic/ppdb.png" class="w-full h-full object-cover flex-shrink-0" alt="Slide 3">
+            
+        </div>
+        <button id="prevSlide" class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md hover:bg-gray-200">
+            &#10094;
+        </button>
+        <button id="nextSlide" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md hover:bg-gray-200">
+            &#10095;
+        </button>
+        <div id="dots" class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
+            <span class="dot w-3 h-3 bg-gray-400 rounded-full cursor-pointer"></span>
+            <span class="dot w-3 h-3 bg-gray-400 rounded-full cursor-pointer"></span>
+            <span class="dot w-3 h-3 bg-gray-400 rounded-full cursor-pointer"></span>
+        </div>
+    </div>
+</div>
+
+    <!-- Bagian HTML -->
+<div class="container mx-auto my-6 grid md:grid-cols-2 gap-6 px-4">
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-lg font-semibold">SMA</h2>
+        <table class="w-full mt-2 border-collapse border border-gray-300">
+            <tr class="border border-gray-300"><td class="p-2">SMA Negeri 2 Surakarta - IPA, IPS</td></tr>
+            <tr class="border border-gray-300"><td class="p-2">SMA Negeri 3 Surakarta - IPS</td></tr>
+            <tr class="border border-gray-300"><td class="p-2">SMA Negeri 4 Surakarta - IPA, IPS</td></tr>
+        </table>
+        <button id="daftarbtnsmk" onclick="openModal('SMA', this)" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Daftar</button>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-lg font-semibold">SMK</h2>
+        <table class="w-full mt-2 border-collapse border border-gray-300">
+            <tr class="border border-gray-300"><td class="p-2">SMK Negeri 4 Surakarta - RPL</td></tr>
+            <tr class="border border-gray-300"><td class="p-2">SMK Negeri 6 Surakarta - AKL, RPL, ULP</td></tr>
+            <tr class="border border-gray-300"><td class="p-2">SMK Negeri 5 Surakarta - RPL, ULP</td></tr>
+            <tr class="border border-gray-300"><td class="p-2">SMK Negeri 7 Surakarta - AKL, ULP</td></tr>
+        </table>
+        <button id="daftarbtnsma" onclick="openModal('SMK', this)" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Daftar</button>
+    </div>
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-white w-full max-w-md p-6 rounded-t-lg transform translate-y-full transition-transform duration-500">
+        <h3 class="text-lg font-semibold mb-4">Pilih Sekolah & Jurusan</h3>
+        <div id="modalContent">
+            <!-- Isi modal akan diganti berdasarkan SMA/SMK -->
+        </div>
+        <button onclick="submitSelection()" class="w-full mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Submit</button>
+        <button onclick="closeModal()" class="w-full mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Tutup</button>
+    </div>
+</div>
+    
+    
+<!--Pengunguman -->
+    <section class="container mx-auto my-6 px-4">
+        <h2 class="text-lg font-semibold">Pengumuman :</h2>
+        <div id="berita-container"  class="bg-yellow-200 p-4 rounded-lg shadow-md">
+            <p><strong>Loading...</strong> Loading....</p>
+        </div>
+    </section>
+<!-- END OF Pengunguman -->
+
+
+<section class="container mx-auto my-6 px-4">
+  <h2 class="text-lg font-semibold mb-4">Lihat Peringkat Siswa</h2>
+
+  <div class="flex flex-col md:flex-row gap-4 mb-4">
+    <!-- Dropdown Sekolah -->
+    <select id="sekolahSelect" class="p-2 border rounded w-full md:w-1/2">
+      <option value="">-- Pilih Sekolah --</option>
+      <option value="SMA Negeri 2 Surakarta">SMA Negeri 2 Surakarta</option>
+      <option value="SMA Negeri 3 Surakarta">SMA Negeri 3 Surakarta</option>
+      <option value="SMA Negeri 4 Surakarta">SMA Negeri 4 Surakarta</option>
+      <option value="SMK Negeri 4 Surakarta">SMK Negeri 4 Surakarta</option>
+      <option value="SMK Negeri 5 Surakarta">SMK Negeri 5 Surakarta</option>
+      <option value="SMK Negeri 6 Surakarta">SMK Negeri 6 Surakarta</option>
+      <option value="SMK Negeri 7 Surakarta">SMK Negeri 7 Surakarta</option>
+    </select>
+
+    <!-- Dropdown Jurusan -->
+    <div id="jurusanContainer" class="w-full md:w-1/2">
+      <select id="jurusanSelect" class="p-2 border rounded w-full"></select>
+    </div>
+  </div>
+
+  <!-- Output Ranking -->
+  <div id="rankingOutput" class="mt-4"></div>
+</section>
+
+
+
+    <section class="container mx-auto my-6 px-4">
+        <h2 class="text-lg font-semibold">Persyaratan Dokumen</h2>
+        <ul class="list-disc pl-6 mt-2">
+            <li>Surat Fakta Integritas</li>
+            <li>Salinan Nilai Rapor Semester Terakhir</li>
+            <li>Fotokopi Akta Kelahiran</li>
+            <li>Fotokopi Kartu Keluarga</li>
+            <li>Pas Foto Berwarna 3x4 (2 lembar)</li>
+        </ul>
+    </section>
+
+    <footer class="bg-gray-800 text-white text-center p-4 mt-6">
+        &copy; M Aqiel Adhi R | 26 | XII PPLG 
+    </footer>
+    
+<!-- Firebase SDK -->
+<script type="module">  
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, set, push, onValue, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+  
+    // 🔹 Konfigurasi Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyD56P06t7d_P9ct7Ym1L8KNDvsfvMTQdp8",
+        authDomain: "informasippdb-a32b5.firebaseapp.com",
+        databaseURL: "https://informasippdb-a32b5-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "informasippdb-a32b5",
+        storageBucket: "informasippdb-a32b5.appspot.com",
+        messagingSenderId: "298339506279",
+        appId: "1:298339506279:web:6a32dbbc7237faea6b9cc2",
+        measurementId: "G-TKWCD0N90E"
+    };
+  
+    // 🔹 Inisialisasi Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    
+
+    // 🔹 Simpan ke `window` agar bisa diakses dari `index.js`
+    window.firebaseDatabase = database;
+    window.firebaseRef = (path) => ref(database, path);
+    window.firebaseSet = (path, data) => set(ref(database, path), data);
+    window.firebasePush = (path, data) => push(ref(database, path), data);
+  
+    console.log("✅ Firebase berhasil dimuat!");
+
+   // Gunakan instance Firebase yang sudah ada
+function fetchBerita() {
+    const db = window.firebaseDatabase;
+    const beritaRef = window.firebaseRef('berita');
+
+    onValue(beritaRef, (snapshot) => {
+        const beritaContainer = document.getElementById("berita-container");
+        beritaContainer.innerHTML = ""; // Kosongkan sebelum render ulang
+        
+        if (snapshot.exists()) {
+            snapshot.forEach((childSnapshot) => {
+                const data = childSnapshot.val();
+                const beritaDiv = document.createElement("div");
+                beritaDiv.className = "bg-yellow-200 p-4 rounded-lg shadow-md mb-4";
+                beritaDiv.innerHTML = `
+                    <h3 class="text-lg font-semibold">${data.judul || "Pengumuman"}</h3>
+                    <p class="text-sm text-gray-600">Kategori: ${data.kategori || "Umum"} | Waktu: ${data.waktu || "Tidak tersedia"}</p>
+                    <p><strong>${data.subjudul || ""}</strong> ${data.konten || "Tidak ada isi berita."}</p>
+                `;
+                beritaContainer.appendChild(beritaDiv);
+            });
+        } else {
+            beritaContainer.innerHTML = "<p>Tidak ada berita tersedia.</p>";
+        }
+    });
+}
+// List peringkat
+const dataSekolah = {
+    "SMA Negeri 2 Surakarta": ["IPA", "IPS"],
+    "SMA Negeri 3 Surakarta": ["IPS"],
+    "SMA Negeri 4 Surakarta": ["IPA", "IPS"],
+    "SMK Negeri 4 Surakarta": ["RPL"],
+    "SMK Negeri 6 Surakarta": ["AKL", "RPL", "ULP"],
+    "SMK Negeri 5 Surakarta": ["RPL", "ULP"],
+    "SMK Negeri 7 Surakarta": ["AKL", "ULP"]
+};
+
+// Fungsi A: Memantau perubahan data
+function monitorDataChanges(school, major) {
+    const rankingRef = window.firebaseRef(`pendaftaran/${school}/${major}`);
+    
+    // Memantau apakah ada perubahan data pada path ini
+    get(rankingRef).then(snapshot => {
+        if (snapshot.exists()) {
+            console.log("🔄 Data terbaru ditemukan, memproses...");
+            processAndUpdateRanking(school, major, snapshot);
+        } else {
+            console.log("Tidak ada data baru.");
+        }
+    }).catch(error => {
+        console.error("Gagal mengambil data:", error);
+    });
+}
+
+// Fungsi B: Proses dan update status peringkat
+function processAndUpdateRanking(school, major, snapshot) {
+    const rankingOutput = document.getElementById("rankingOutput");
+    rankingOutput.innerHTML = `<p class="text-gray-500 italic">Memuat data...</p>`;
+
+    const siswaArray = [];
+    snapshot.forEach(childSnapshot => {
+        const nis = childSnapshot.key;
+        const siswa = childSnapshot.val();
+        siswaArray.push({
+            nis: nis,
+            nama: siswa.name || "Tanpa Nama",
+            nilai: parseFloat(siswa.nilaiRata || siswa.nilai || 0),
+            status: siswa.status || "Proses"
+        });
+    });
+
+    // Urutkan berdasarkan nilai dari tinggi ke rendah
+    siswaArray.sort((a, b) => b.nilai - a.nilai);
+
+    // Ambil tanggal penutupan dari localStorage
+    const tanggalPenutupan = localStorage.getItem("tanggalPenutupan");
+    const today = new Date().toISOString().split("T")[0]; // Format YYYY-MM-DD
+
+    const sudahDitutup = tanggalPenutupan && today >= tanggalPenutupan;
+
+    // Update status
+    siswaArray.forEach((siswa, index) => {
+        const path = `pendaftaran/${school}/${major}/${siswa.nis}`;
+        let newStatus = "";
+
+        if (index < 36) {
+            newStatus = sudahDitutup ? "Diterima" : "Menunggu";
+        } else {
+            newStatus = "Maaf anda tidak diterima";
+        }
+
+        if (siswa.status !== newStatus) {
+            firebaseSet(path + "/status", newStatus)
+                .then(() => {
+                    console.log(`✅ Status ${siswa.nama} diubah menjadi ${newStatus}`);
+                })
+                .catch(err => {
+                    console.error(`❌ Gagal ubah status ${siswa.nama}:`, err);
+                });
+        }
+    });
+
+    // Tampilkan tabel untuk 36 besar
+    const top36 = siswaArray.slice(0, 36);
+    const output = top36.map((siswa, index) => `
+        <tr>
+            <td class="border px-4 py-2 text-center">${index + 1}</td>
+            <td class="border px-4 py-2">${siswa.nama}</td>
+            <td class="border px-4 py-2 text-center">${siswa.nilai}</td>
+        </tr>
+    `).join("");
+
+    rankingOutput.innerHTML = `
+        <h3 class="text-md font-semibold mb-2">Peringkat - ${school} (${major})</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full border border-black-300 mb-4 text-sm">
+              <thead class="bg-black-100">
+                  <tr>
+                      <th class="border px-4 py-2">Peringkat</th>
+                      <th class="border px-4 py-2">Nama</th>
+                      <th class="border px-4 py-2">Nilai</th>
+                  </tr>
+              </thead>
+              <tbody>${output}</tbody>
+          </table>
+        </div>
+    `;
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const sekolahSelect = document.getElementById("sekolahSelect");
+    const jurusanSelect = document.getElementById("jurusanSelect");
+    const jurusanContainer = document.getElementById("jurusanContainer"); // <--- Container jurusan
+    fetchAndSaveTanggalPenutupan();
+
+    function updateJurusanDropdown() {
+        const sekolah = sekolahSelect.value;
+        const jurusanList = dataSekolah[sekolah] || [];
+
+        jurusanSelect.innerHTML = "";
+
+        if (jurusanList.length > 0) {
+            jurusanContainer.style.display = "block"; // tampilkan dropdown jurusan
+            jurusanList.forEach(jurusan => {
+                const option = document.createElement("option");
+                option.value = jurusan;
+                option.textContent = jurusan;
+                jurusanSelect.appendChild(option);
+            });
+
+            // Jika jurusan pertama terpilih, langsung tampilkan peringkat
+            lihatPeringkat(sekolah, jurusanList[0]);
+        } else {
+            jurusanContainer.style.display = "none"; // sembunyikan
+            document.getElementById("rankingOutput").innerHTML = "";
+        }
+    }
+
+    sekolahSelect.addEventListener("change", updateJurusanDropdown);
+
+    jurusanSelect.addEventListener("change", () => {
+        const sekolah = sekolahSelect.value;
+        const jurusan = jurusanSelect.value;
+        if (sekolah && jurusan) {
+            lihatPeringkat(sekolah, jurusan);
+        }
+    });
+
+    // Awalnya sembunyikan jurusan dropdown
+    document.getElementById("jurusanContainer").style.display = "none";
+});
+
+function lihatPeringkat(school, major) {
+    // Panggil fungsi untuk memantau perubahan data setiap beberapa detik
+    monitorDataChanges(school, major);
+}
+
+//list peringkat akhir 
+
+// Panggil function saat halaman dimuat
+document.addEventListener("DOMContentLoaded", fetchBerita);
+
+//localstorage jam 
+function fetchAndSaveTanggalPenutupan() {
+  const tanggalRef = firebaseRef('penutupan/tegattwaktu/tanggal');  // Ganti dengan path yang sesuai
+  get(tanggalRef)
+    .then(snapshot => {
+      if (snapshot.exists()) {
+        const tanggalPenutupan = snapshot.val();  // Ambil tanggal penutupan dari Firebase
+        localStorage.setItem('tanggalPenutupan', tanggalPenutupan);  // Simpan ke localStorage
+        console.log("Tanggal penutupan berhasil disimpan ke localStorage:", tanggalPenutupan);
+      } else {
+        console.log("Data tanggal penutupan tidak ditemukan di Firebase.");
+      }
+    })
+    .catch(error => {
+      console.error("Gagal mengambil tanggal penutupan:", error);
+    });
+}
+
+</script>
+
+  <script defer src="js/index.js"></script>
+
+</body>
+</html>
