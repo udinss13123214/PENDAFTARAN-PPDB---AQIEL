@@ -117,24 +117,22 @@
     </div>
 </div>
 
-
-    
-
-    <!-- Modal Lihat Dokumen -->
-    <div id="docModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-        <div class="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h3 class="text-lg font-bold text-blue-600">Dokumen</h3>
-            <img id="docImage" src="" alt="Dokumen" class="mt-4 w-full h-auto rounded-lg">
-            <div class="mt-4 flex justify-center">
-                <button onclick="closeDocModal()" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700">Tutup</button>
-            </div>
+<!-- Modal untuk menampilkan dokumen -->
+<div id="docModal" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+        <h3 class="text-lg font-bold text-blue-600">Dokumen</h3>
+        <img id="docImage" src="" alt="Dokumen" class="mt-4 w-full h-auto rounded-lg">
+        <div class="mt-4 flex justify-center">
+            <button onclick="closeDocModal()" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700">Tutup</button>
         </div>
     </div>
+</div>
 
     <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
 import { getDatabase, ref, get, update, remove } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
-import { getStorage, ref as storageRef, listAll, deleteObject } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
+import { getStorage, ref as storageRef, listAll, deleteObject,getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
+
 
 // Konfigurasi Firebase
 const firebaseConfig = {
@@ -244,7 +242,7 @@ if (!nis) {
                 `;
             }
 
-document.getElementById("pendaftaranList").innerHTML = daftarPendaftaran + diterimaInfo + tombolUnduhPDF;
+    document.getElementById("pendaftaranList").innerHTML = daftarPendaftaran + diterimaInfo + tombolUnduhPDF;
 
 
             // Simpan pilihan ke global (untuk digunakan saat export)
@@ -255,39 +253,48 @@ document.getElementById("pendaftaranList").innerHTML = daftarPendaftaran + diter
                 const data = window.userData;
                 const pilihan = window.pilihanList || [];
                 const pilihanUtama = pilihan[0];
-const pilihanKedua = pilihan[1] || null;
+    const pilihanKedua = pilihan[1] || null;
 
-let hasilPenerimaan = "";
+    let hasilPenerimaan = "";
 
-if (pilihanUtama && pilihanUtama.status === "Diterima") {
-    hasilPenerimaan = `<p><strong>Selamat Anda diterima di :</strong> ${pilihanUtama.sekolah} - ${pilihanUtama.jurusan} (${pilihanUtama.status})</p>`;
-} else if (pilihanKedua && pilihanKedua.status === "Diterima") {
-    hasilPenerimaan = `<p><strong>Selamat Anda diterima di :</strong> ${pilihanKedua.sekolah} - ${pilihanKedua.jurusan} (${pilihanKedua.status})</p>`;
-} else {
+    if (pilihanUtama && pilihanUtama.status === "Diterima") {
+        hasilPenerimaan = `<p><strong>Selamat Anda diterima di :</strong> ${pilihanUtama.sekolah} - ${pilihanUtama.jurusan} (${pilihanUtama.status})</p>`;
+    } else if (pilihanKedua && pilihanKedua.status === "Diterima") {
+        hasilPenerimaan = `<p><strong>Selamat Anda diterima di :</strong> ${pilihanKedua.sekolah} - ${pilihanKedua.jurusan} (${pilihanKedua.status})</p>`;
+    } else {
     hasilPenerimaan = `<p><strong>Maaf, Anda tidak diterima di manapun.</strong></p>`;
-}
+    }
 
-const pdfContent = `
-<div>
-    <h2 style="text-align:center;">Data Pendaftaran</h2>
+    const pdfContent = `
+  <div style="font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; color: #333;">
+    <h2 style="text-align: center; color: #87CEEB; border-bottom: 2px solid #87CEEB; padding-bottom: 10px;">
+      Data Pendaftaran
+    </h2> 
 
-    <h3>Data Pribadi</h3>
-    <p><strong>Nama:</strong> ${data.name || "-"}</p>
-    <p><strong>Agama:</strong> ${data.agama || "-"}</p>
-    <p><strong>Alamat:</strong> ${data.alamat?.Kelurahan || "-"}, ${data.alamat?.Kecamatan || "-"}</p>
-    <p><strong>RT / RW:</strong> RT ${data.alamat?.RT || "-"} / RW ${data.alamat?.RW || "-"}</p>
-    <p><strong>No. HP:</strong> ${data.nohp || "-"}</p>
+    <div style="margin-top: 30px;">
+      <h3 style="color: #87CEEB; border-left: 4px solid #87CEEB; padding-left: 10px;">Data Pribadi</h3>
+      <p><strong>Nama:</strong> ${data.name || "-"}</p>
+      <p><strong>Agama:</strong> ${data.agama || "-"}</p>
+      <p><strong>Alamat:</strong> ${data.alamat?.Kelurahan || "-"}, ${data.alamat?.Kecamatan || "-"}</p>
+      <p><strong>RT / RW:</strong> RT ${data.alamat?.RT || "-"} / RW ${data.alamat?.RW || "-"}</p>
+      <p><strong>No. HP:</strong> ${data.nohp || "-"}</p>
+    </div>
 
-    <h3>Nilai</h3>
-    <p><strong>IPA:</strong> ${data.nilai?.IPA || "-"}</p>
-    <p><strong>Bahasa Indonesia:</strong> ${data.nilai?.Indonesia || "-"}</p>
-    <p><strong>Bahasa Inggris:</strong> ${data.nilai?.Inggris || "-"}</p>
-    <p><strong>Matematika:</strong> ${data.nilai?.Matematika || "-"}</p>
-    <p><strong>Rata-Rata:</strong> ${data.nilai?.RataRata || "-"}</p>
+    <div style="margin-top: 30px;">
+      <h3 style="color: #87CEEB; border-left: 4px solid #87CEEB; padding-left: 10px;">Nilai</h3>
+      <p><strong>IPA:</strong> ${data.nilai?.IPA || "-"}</p>
+      <p><strong>Bahasa Indonesia:</strong> ${data.nilai?.Indonesia || "-"}</p>
+      <p><strong>Bahasa Inggris:</strong> ${data.nilai?.Inggris || "-"}</p>
+      <p><strong>Matematika:</strong> ${data.nilai?.Matematika || "-"}</p>
+      <p style="margin-top: 10px;"><strong>Rata-Rata:</strong> <span style="font-size: 1.1em; font-weight: bold;">${data.nilai?.RataRata || "-"}</span></p>
+    </div>
 
-    ${hasilPenerimaan}
-</div>
+    <div style="margin-top: 30px;">
+      ${hasilPenerimaan}
+    </div>
+  </div>
 `;
+
 
 
                 const tempDiv = document.createElement("div");
@@ -417,14 +424,47 @@ window.deleteAccount = function () {
 };
 
 
-window.showDocument = function (docType) {
-    document.getElementById("docImage").src = window.dokumen?.[docType] || "#";
-    document.getElementById("docModal").classList.remove("hidden");
+//function tampilgambar
+window.showDocument = async function (docType) {
+    try {
+        const nis = localStorage.getItem("nis");
+        if (!nis) throw new Error("NIS tidak ditemukan di localStorage");
+
+        let fileName = `${docType.toLowerCase()}.jpg`; // default: ijazah.jpg, rapor.jpg
+        let fileRef;
+
+        if (docType.toLowerCase().includes("fakta")) {
+            // Untuk dokumen fakta integritas, cari file yang mengandung kata "fakta"
+            const folderRef = storageRef(storage, `user/${nis}`);
+            const listResult = await listAll(folderRef);
+
+            const faktaFile = listResult.items.find(item =>
+                item.name.toLowerCase().includes("fakta")
+            );
+
+            if (!faktaFile) throw new Error("Dokumen fakta tidak ditemukan");
+
+            fileRef = faktaFile;
+        } else {
+            // Dokumen biasa seperti ijazah atau rapor
+            fileRef = storageRef(storage, `user/${nis}/${fileName}`);
+        }
+
+        const downloadURL = await getDownloadURL(fileRef);
+        document.getElementById("docImage").src = downloadURL;
+        document.getElementById("docModal").classList.remove("hidden");
+    } catch (error) {
+        console.error("Gagal menampilkan dokumen:", error);
+        alert("Dokumen tidak tersedia atau terjadi kesalahan.");
+    }
 };
 
 window.closeDocModal = function () {
     document.getElementById("docModal").classList.add("hidden");
+    document.getElementById("docImage").src = "";
 };
+
+
 // Fungsi Logout
 window.logout = function () {
     localStorage.clear(); // Menghapus semua data di localStorage
