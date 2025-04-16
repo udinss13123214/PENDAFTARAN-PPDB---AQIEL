@@ -106,16 +106,6 @@
     </ul>
 </section>
 
-<!--Pengunguman -->
-    <section class="container mx-auto my-6 px-4">
-        <h2 class="text-lg font-semibold">Pengumuman :</h2>
-        <div id="berita-container"  class="bg-yellow-200 p-4 rounded-lg shadow-md">
-            <p><strong>Loading...</strong> Loading....</p>
-        </div>
-    </section>
-<!-- END OF Pengunguman -->
-
-
 <section class="container mx-auto my-6 px-4">
   <h2 class="text-lg font-semibold mb-4">Lihat Peringkat Siswa</h2>
 
@@ -142,6 +132,14 @@
   <div id="rankingOutput" class="mt-4"></div>
 </section>
 
+<!--Pengunguman -->
+<section class="container mx-auto my-6 px-4">
+    <h2 class="text-lg font-semibold">Pengumuman :</h2>
+    <div id="berita-container"  class="bg-yellow-200 p-4 rounded-lg shadow-md">
+        <p><strong>Loading...</strong> Loading....</p>
+    </div>
+</section>
+<!-- END OF Pengunguman -->
 
     <footer class="bg-gray-800 text-white text-center p-4 mt-6">
         &copy; M Aqiel Adhi R | 26 | XII PPLG 
@@ -357,7 +355,7 @@ function lihatPeringkat(school, major) {
     monitorDataChanges(school, major);
 }
 
-//list peringkat akhir 
+//list peringkat akhir code
 
 // Panggil function saat halaman dimuat
 document.addEventListener("DOMContentLoaded", fetchBerita);
