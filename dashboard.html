@@ -188,132 +188,147 @@ if (!nis) {
     });
 
     // Ambil data pendaftaran
-    get(ref(database, "pendaftaran")).then((snapshot) => {
-        let daftarPendaftaran = "";
-        let diterimaInfo = "";
-        let ditemukan = false;
-        let pilihanList = [];
+get(ref(database, "pendaftaran")).then((snapshot) => {
+    let daftarPendaftaran = "";
+    let diterimaInfo = "";
+    let ditemukan = false;
+    let pilihanList = [];
 
-        snapshot.forEach((schoolSnap) => {
-            schoolSnap.forEach((majorSnap) => {
-                const siswaData = majorSnap.child(nis);
-                if (siswaData.exists()) {
-                    ditemukan = true;
-                    const sekolah = schoolSnap.key;
-                    const jurusan = majorSnap.key;
-                    const status = siswaData.child("status").val() || "Proses";
+    snapshot.forEach((schoolSnap) => {
+        schoolSnap.forEach((majorSnap) => {
+            const siswaData = majorSnap.child(nis);
+            if (siswaData.exists()) {
+                ditemukan = true;
+                const sekolah = schoolSnap.key;
+                const jurusan = majorSnap.key;
+                const status = siswaData.child("status").val() || "Proses";
 
-                    const html = `
-                        <li>
-                            ${sekolah} - ${jurusan}
-                            <span class="ml-2 px-2 py-1 text-white text-sm rounded ${statusColor(status)}">
-                                ${status}
-                            </span>
-                        </li>`;
+                const html = `
+                    <li>
+                        ${sekolah} - ${jurusan}
+                        <span class="ml-2 px-2 py-1 text-white text-sm rounded ${statusColor(status)}">
+                            ${status}
+                        </span>
+                    </li>`;
 
-                    pilihanList.push({ sekolah, jurusan, status, html });
-                }
-            });
+                pilihanList.push({ sekolah, jurusan, status, html });
+            }
         });
+    });
 
-        if (ditemukan) {
-            daftarPendaftaran = `<ul class="space-y-1">${pilihanList.map(p => p.html).join("")}</ul>`;
-            const diterimaPilihan = pilihanList.find(p => p.status === "Diterima");
+    if (ditemukan) {
+        daftarPendaftaran = `<ul class="space-y-1">${pilihanList.map(p => p.html).join("")}</ul>`;
 
-            if (diterimaPilihan) {
-                diterimaInfo = `
-                    <div class="mt-3 p-3 bg-green-100 border border-green-300 text-green-800 rounded">
-                        🎉 Selamat! Anda diterima di <strong>${diterimaPilihan.sekolah} - ${diterimaPilihan.jurusan}</strong>.
-                    </div>`;
-            } else {
-                diterimaInfo = `
-                    <div class="mt-3 p-3 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded">
-                        ⏳ Anda belum diterima di pilihan manapun.
-                    </div>`;
-            }
+        const pilihanUtama = pilihanList[0];
+        const pilihanKedua = pilihanList[1] || null;
 
-            let tombolUnduhPDF = "";
+        if (pilihanUtama?.status === "Diterima") {
+    diterimaInfo = `
+        <div class="mt-3 p-3 bg-green-100 border border-green-300 text-green-800 rounded">
+            🎉 Selamat! Anda <strong>diterima di pilihan ke-1</strong>: 
+            <strong>${pilihanUtama.sekolah} - ${pilihanUtama.jurusan}</strong>.
+        </div>`;
+} else if (pilihanKedua?.status === "Diterima") {
+    diterimaInfo = `
+        <div class="mt-3 p-3 bg-green-100 border border-green-300 text-green-800 rounded">
+            🎉 Selamat! Anda <strong>diterima di pilihan ke-2</strong>: 
+            <strong>${pilihanKedua.sekolah} - ${pilihanKedua.jurusan}</strong>.
+        </div>`;
+} else {
+            diterimaInfo = `
+                <div class="mt-3 p-3 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded">
+                    ⏳ Anda belum diterima di pilihan manapun.
+                </div>`;
+        }
 
-            if (isAfterDeadline()) {
-                tombolUnduhPDF = `
-                     <button id="unduhPdf" class="mt-3 px-4 py-2 bg-red-500 text-white rounded">
-                          Download PDF
-                     </button>
-                `;
-            }
+        let tombolUnduhPDF = "";
+        if (isAfterDeadline()) {
+            tombolUnduhPDF = `
+                <button id="unduhPdf" class="mt-3 px-4 py-2 bg-red-500 text-white rounded">
+                    Download PDF
+                </button>`;
+        }
 
-    document.getElementById("pendaftaranList").innerHTML = daftarPendaftaran + diterimaInfo + tombolUnduhPDF;
+        document.getElementById("pendaftaranList").innerHTML = daftarPendaftaran + diterimaInfo + tombolUnduhPDF;
 
+        // Simpan pilihan ke global (untuk digunakan saat export)
+        window.pilihanList = pilihanList;
 
-            // Simpan pilihan ke global (untuk digunakan saat export)
-            window.pilihanList = pilihanList;
-
-            // Event listener unduh PDF
-            document.getElementById("unduhPdf").addEventListener("click", () => {
-                const data = window.userData;
-                const pilihan = window.pilihanList || [];
-                const pilihanUtama = pilihan[0];
+        // Event listener unduh PDF
+        document.getElementById("unduhPdf")?.addEventListener("click", () => {
+    const data = window.userData;
+    const pilihan = window.pilihanList || [];
+    const pilihanUtama = pilihan[0];
     const pilihanKedua = pilihan[1] || null;
 
     let hasilPenerimaan = "";
 
     if (pilihanUtama && pilihanUtama.status === "Diterima") {
-        hasilPenerimaan = `<p><strong>Selamat Anda diterima di :</strong> ${pilihanUtama.sekolah} - ${pilihanUtama.jurusan} (${pilihanUtama.status})</p>`;
+        hasilPenerimaan = `<p><strong>Selamat Anda diterima di pilihan pertama:</strong> ${pilihanUtama.sekolah} - ${pilihanUtama.jurusan} (${pilihanUtama.status})</p>`;
     } else if (pilihanKedua && pilihanKedua.status === "Diterima") {
-        hasilPenerimaan = `<p><strong>Selamat Anda diterima di :</strong> ${pilihanKedua.sekolah} - ${pilihanKedua.jurusan} (${pilihanKedua.status})</p>`;
+        hasilPenerimaan = `<p><strong>Selamat Anda diterima di:</strong> ${pilihanKedua.sekolah} - ${pilihanKedua.jurusan} (${pilihanKedua.status})</p>`;
     } else {
-    hasilPenerimaan = `<p><strong>Maaf, Anda tidak diterima di manapun.</strong></p>`;
+        hasilPenerimaan = `<p><strong>Maaf, Anda tidak diterima di manapun.</strong></p>`;
     }
 
+    // ✨ Tambahkan bagian pilihan sekolah
+    const pilihanSekolahHTML = `
+        <div style="margin-top: 30px;">
+            <h3 style="color: #87CEEB; border-left: 4px solid #87CEEB; padding-left: 10px;">Pilihan Sekolah</h3>
+            <p><strong>Pilihan 1:</strong> ${pilihanUtama ? `${pilihanUtama.sekolah} - ${pilihanUtama.jurusan} (${pilihanUtama.status})` : "-"}</p>
+            <p><strong>Pilihan 2:</strong> ${pilihanKedua ? `${pilihanKedua.sekolah} - ${pilihanKedua.jurusan} (${pilihanKedua.status})` : "-"}</p>
+        </div>`;
+
     const pdfContent = `
-  <div style="font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; color: #333;">
-    <h2 style="text-align: center; color: #87CEEB; border-bottom: 2px solid #87CEEB; padding-bottom: 10px;">
-      Data Pendaftaran
-    </h2> 
+        <div style="font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; color: #333;">
+            <h2 style="text-align: center; color: #87CEEB; border-bottom: 2px solid #87CEEB; padding-bottom: 10px;">
+                Data Pendaftaran
+            </h2> 
 
-    <div style="margin-top: 30px;">
-      <h3 style="color: #87CEEB; border-left: 4px solid #87CEEB; padding-left: 10px;">Data Pribadi</h3>
-      <p><strong>Nama:</strong> ${data.name || "-"}</p>
-      <p><strong>Agama:</strong> ${data.agama || "-"}</p>
-      <p><strong>Alamat:</strong> ${data.alamat?.Kelurahan || "-"}, ${data.alamat?.Kecamatan || "-"}</p>
-      <p><strong>RT / RW:</strong> RT ${data.alamat?.RT || "-"} / RW ${data.alamat?.RW || "-"}</p>
-      <p><strong>No. HP:</strong> ${data.nohp || "-"}</p>
-    </div>
+            <div style="margin-top: 30px;">
+                <h3 style="color: #87CEEB; border-left: 4px solid #87CEEB; padding-left: 10px;">Data Pribadi</h3>
+                <p><strong>Nama:</strong> ${data.name || "-"}</p>
+                <p><strong>Agama:</strong> ${data.agama || "-"}</p>
+                <p><strong>Alamat:</strong> ${data.alamat?.Kelurahan || "-"}, ${data.alamat?.Kecamatan || "-"}</p>
+                <p><strong>RT / RW:</strong> RT ${data.alamat?.RT || "-"} / RW ${data.alamat?.RW || "-"}</p>
+                <p><strong>No. HP:</strong> ${data.nohp || "-"}</p>
+            </div>
 
-    <div style="margin-top: 30px;">
-      <h3 style="color: #87CEEB; border-left: 4px solid #87CEEB; padding-left: 10px;">Nilai</h3>
-      <p><strong>IPA:</strong> ${data.nilai?.IPA || "-"}</p>
-      <p><strong>Bahasa Indonesia:</strong> ${data.nilai?.Indonesia || "-"}</p>
-      <p><strong>Bahasa Inggris:</strong> ${data.nilai?.Inggris || "-"}</p>
-      <p><strong>Matematika:</strong> ${data.nilai?.Matematika || "-"}</p>
-      <p style="margin-top: 10px;"><strong>Rata-Rata:</strong> <span style="font-size: 1.1em; font-weight: bold;">${data.nilai?.RataRata || "-"}</span></p>
-    </div>
+            <div style="margin-top: 30px;">
+                <h3 style="color: #87CEEB; border-left: 4px solid #87CEEB; padding-left: 10px;">Nilai</h3>
+                <p><strong>IPA:</strong> ${data.nilai?.IPA || "-"}</p>
+                <p><strong>Bahasa Indonesia:</strong> ${data.nilai?.Indonesia || "-"}</p>
+                <p><strong>Bahasa Inggris:</strong> ${data.nilai?.Inggris || "-"}</p>
+                <p><strong>Matematika:</strong> ${data.nilai?.Matematika || "-"}</p>
+                <p style="margin-top: 10px;"><strong>Rata-Rata:</strong> <span style="font-size: 1.1em; font-weight: bold;">${data.nilai?.RataRata || "-"}</span></p>
+            </div>
 
-    <div style="margin-top: 30px;">
-      ${hasilPenerimaan}
-    </div>
-  </div>
-`;
+            ${pilihanSekolahHTML}
 
+            <div style="margin-top: 30px;">
+                ${hasilPenerimaan}
+            </div>
+        </div>
+    `;
 
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = pdfContent;
+    document.body.appendChild(tempDiv);
 
-                const tempDiv = document.createElement("div");
-                tempDiv.innerHTML = pdfContent;
-                document.body.appendChild(tempDiv);
-
-                html2pdf().from(tempDiv).set({
-                    margin: 10,
-                    filename: `${data.name || 'Data'}_Pendaftaran.pdf`,
-                    html2canvas: { scale: 2 },
-                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                }).save().then(() => {
-                    document.body.removeChild(tempDiv);
-                });
-            });
-        } else {
-            document.getElementById("pendaftaranList").innerHTML = "<p>Anda belum mendaftar.</p>";
-        }
+    html2pdf().from(tempDiv).set({
+        margin: 10,
+        filename: `${data.name || 'Data'}_Pendaftaran.pdf`,
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    }).save().then(() => {
+        document.body.removeChild(tempDiv);
     });
+});
+    } else {
+        document.getElementById("pendaftaranList").innerHTML = "<p>Anda belum mendaftar.</p>";
+    }
+});
+
 }
 
 
@@ -327,7 +342,7 @@ function statusColor(status) {
             return "bg-green-500";
         case "Menunggu":
             return "bg-yellow-500";
-        case "Maaf anda tidak diterima":
+        case "Tidak diterima":
             return "bg-red-500";
         default:
             return "bg-gray-400";
